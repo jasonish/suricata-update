@@ -501,6 +501,12 @@ def handle_dataset_files(rule, dep_files):
         fp.write(dataset_contents.decode("utf-8"))
     return new_rule
 
+def is_path_in_directory(filename, directory):
+    relpath = os.path.relpath(filename, directory)
+    return relpath == os.curdir or (
+        relpath != os.pardir and
+        not relpath.startswith(os.pardir + os.sep))
+
 def handle_embedded_file(rule, dep_files, kw):
     if not rule.enabled:
         return
@@ -519,14 +525,29 @@ def handle_embedded_file(rule, dep_files, kw):
         logger.debug("Copying %s file %s to output directory" % (kw, embedded_filename))
         filepath = os.path.join(config.get_output_dir(), os.path.dirname(dest_filename))
         logger.debug("filepath: %s" % filepath)
+        output_filename = os.path.join(filepath, os.path.basename(embedded_filename))
+        logger.debug("output fname: %s" % output_filename)
+
+        # Refuse to write out source files that would land outside
+        # of the rule data directory (traversal attacks, etc).
+        #
+        # Also disable the rule.
+        output_dir = os.path.realpath(config.get_output_dir())
+        real_output_filename = os.path.realpath(output_filename)
+        if not is_path_in_directory(real_output_filename, output_dir):
+            logger.warning(
+                "Refusing to write embedded %s file outside output directory "
+                    "%s: %s (rule: %s). Rule will be disabled." % (
+                    kw, output_dir, real_output_filename, rule.brief()))
+            rule.enabled = False
+            return
+
         try:
             os.makedirs(filepath)
         except OSError as oserr:
             if oserr.errno != errno.EEXIST:
                 logger.error(oserr)
                 sys.exit(1)
-        output_filename = os.path.join(filepath, os.path.basename(embedded_filename))
-        logger.debug("output fname: %s" % output_filename)
         with open(output_filename, "w") as fp:
             fp.write(dep_files[source_filename].decode("utf-8"))
 

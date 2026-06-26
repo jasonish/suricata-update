@@ -19,6 +19,8 @@ from __future__ import print_function
 
 import os
 import io
+import shutil
+import tempfile
 import unittest
 
 import suricata.update.rule
@@ -69,6 +71,51 @@ class TestFetch(unittest.TestCase):
 
         r = fetch.check_checksum(local_file, net_arg)
         self.assertTrue(r)
+
+class EmbeddedFilesTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.output_dir = os.path.join(self.tmpdir, "rules")
+        self.previous_output = main.config.get(main.config.OUTPUT_KEY)
+        main.config.set(main.config.OUTPUT_KEY, self.output_dir)
+
+    def tearDown(self):
+        if self.previous_output is None:
+            main.config._config.pop(main.config.OUTPUT_KEY, None)
+        else:
+            main.config.set(main.config.OUTPUT_KEY, self.previous_output)
+        shutil.rmtree(self.tmpdir)
+
+    def test_handle_embedded_file_writes_inside_output_dir(self):
+        rule = suricata.update.rule.parse(
+            'alert http any any -> any any (msg:"test"; '
+            'lua:scripts/payload.lua; sid:1; rev:1;)',
+            "rules/test.rules")
+        dep_files = {
+            "rules/scripts/payload.lua": b"return true",
+        }
+
+        main.handle_embedded_file(rule, dep_files, "lua")
+
+        self.assertTrue(rule.enabled)
+        with open(os.path.join(self.output_dir, "scripts", "payload.lua")) as fp:
+            self.assertEqual("return true", fp.read())
+
+    def test_handle_embedded_file_refuses_path_traversal(self):
+        rule = suricata.update.rule.parse(
+            'alert http any any -> any any (msg:"test"; '
+            'lua:../outside/payload.lua; sid:1; rev:1;)',
+            "rules/test.rules")
+        dep_files = {
+            "rules/../outside/payload.lua": b"return true",
+        }
+        outside_dir = os.path.join(self.tmpdir, "outside")
+
+        main.handle_embedded_file(rule, dep_files, "lua")
+
+        self.assertFalse(rule.enabled)
+        self.assertFalse(os.path.exists(outside_dir))
 
 class ThresholdProcessorTestCase(unittest.TestCase):
 
