@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.8 - 2026-06-30
+- Fix arbitrary file write in rule archive path traversal:
+  https://redmine.openinfosecfoundation.org/issues/8633
+
 ## 1.3.7 - 2025-10-31
 - Retain rule filename after converting to a drop rule:
   https://redmine.openinfosecfoundation.org/issues/7805
