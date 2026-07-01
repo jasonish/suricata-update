@@ -77,6 +77,9 @@ index = {   'sources': {   'abuse.ch/feodotracker': {   'checksum': False,
                                                    'url': 'https://sslbl.abuse.ch/blacklist/sslblacklist_tls_cert.tar.gz',
                                                    'vendor': 'Abuse.ch'},
                    'abuse.ch/sslbl-c2': {   'checksum': False,
+                                            'deprecated': 'Deprecated by '
+                                                          'source on '
+                                                          '2025-01-03.',
                                             'description': 'This ruleset '
                                                            'contains all '
                                                            'botnet '
@@ -183,6 +186,53 @@ index = {   'sources': {   'abuse.ch/feodotracker': {   'checksum': False,
                                                          'IP blacklist',
                                               'url': 'https://security.etnetera.cz/feeds/etn_aggressive.rules',
                                               'vendor': 'Etnetera a.s.'},
+                   'ipfire/dbl': {   'checksum': False,
+                                     'description': 'IPFire DBL is a '
+                                                    'comprehensive, '
+                                                    'community-maintained '
+                                                    'domain blocklist\n'
+                                                    'that protects your '
+                                                    'network from malware, '
+                                                    'phishing, unwanted '
+                                                    'content, and emerging '
+                                                    'threats\n',
+                                     'homepage': 'https://www.ipfire.org/dbl/',
+                                     'license': 'CC-BY-SA-4.0',
+                                     'min-version': '8.0.0',
+                                     'summary': 'IPFire DBL',
+                                     'url': 'https://dbl.ipfire.org/lists/suricata.tar.gz',
+                                     'vendor': 'IPFire'},
+                   'julioliraup/antiphishing': {   'checksum': False,
+                                                   'description': 'This '
+                                                                  'ruleset is '
+                                                                  'built using '
+                                                                  'malicious '
+                                                                  'URLs and '
+                                                                  'domains '
+                                                                  'involved in '
+                                                                  'phishing '
+                                                                  'attacks,\n'
+                                                                  'utilizing '
+                                                                  'community '
+                                                                  'APIs like '
+                                                                  'Phishstats '
+                                                                  'and '
+                                                                  'Openphish. '
+                                                                  'Hourly '
+                                                                  'updates '
+                                                                  'with '
+                                                                  'cumulative '
+                                                                  'SID\n',
+                                                   'homepage': 'https://github.com/julioliraup/Antiphishing',
+                                                   'license': 'GPL-3.0',
+                                                   'min-version': '7.0.0',
+                                                   'summary': 'Antiphishing '
+                                                              'for protection '
+                                                              'against '
+                                                              'phishing '
+                                                              'attacks',
+                                                   'url': 'https://raw.githubusercontent.com/julioliraup/Antiphishing/refs/heads/main/antiphishing.tar.gz',
+                                                   'vendor': 'julioliraup'},
                    'malsilo/win-malware': {   'checksum': True,
                                               'description': 'TCP/UDP, DNS and '
                                                              'HTTP Windows '
@@ -657,7 +707,7 @@ index = {   'sources': {   'abuse.ch/feodotracker': {   'checksum': False,
                                                         'engine features, not '
                                                         'performance.\n',
                                          'license': 'GPLv3',
-                                         'min-version': '4.1.0',
+                                         'min-version': '7.0.3',
                                          'summary': 'Threat hunting rules',
                                          'url': 'https://github.com/travisbgreen/hunting-rules/raw/master/hunting.rules.tar.gz',
                                          'vendor': 'tgreen'}},
